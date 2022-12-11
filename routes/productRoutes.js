@@ -50,6 +50,7 @@ productRouter.put(
             product.category = req.body.category;
             product.brand = req.body.brand;
             product.countInStock = req.body.countInStock;
+            product.countInStockForRent = req.body.countInStockForRent;
             product.description = req.body.description;
             await product.save();
             res.send({ message: 'Product Updated' });
