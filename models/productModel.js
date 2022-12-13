@@ -26,6 +26,10 @@ const productSchema = new mongoose.Schema(
         rating: { type: Number, required: false },
         numReviews: { type: Number, required: false },
         reviews: [reviewSchema],
+        pickupDate: { type: Date },
+        returnDate: { type: Date },
+        pickedupAt: { type: Date },
+        returnedAt: { type: Date },
 
     },
     {
