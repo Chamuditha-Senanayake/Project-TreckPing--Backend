@@ -111,7 +111,7 @@ orderRouter.put(
                 email_address: req.body.email_address
             };
             const updatedOrder = await order.save();
-            res.send({ message: 'Order Paid', order: updatedOrder });
+            res.send({ message: 'Payment Completed Successfully', order: updatedOrder });
         } else {
             res.status(404).send({ message: 'Order Not Found' });
         }

@@ -21,6 +21,7 @@ const productSchema = new mongoose.Schema(
         description: { type: String, required: true },
         price: { type: Number, required: true },
         rent: { type: Number, required: false },
+        penalty: { type: Number, required: false },
         countInStock: { type: Number, required: true },
         countInStockForRent: { type: Number, required: false },
         rating: { type: Number, required: false },

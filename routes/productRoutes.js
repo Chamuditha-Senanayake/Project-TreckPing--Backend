@@ -21,6 +21,7 @@ productRouter.post(
             image: '/images/tent-1.jpg',
             price: 0,
             rent: 0,
+            penalty: 0,
             category: 'sample category',
             brand: 'sample brand',
             countInStock: 0,
@@ -45,6 +46,8 @@ productRouter.put(
             product.name = req.body.name;
             product.slug = req.body.slug;
             product.price = req.body.price;
+            product.rent = req.body.rent;
+            product.penalty = req.body.penalty;
             product.image = req.body.image;
             product.images = req.body.images;
             product.category = req.body.category;

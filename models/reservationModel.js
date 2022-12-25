@@ -15,6 +15,7 @@ const reservationSchema = new mongoose.Schema(
                 returnDate: { type: Date },
                 pickedupAt: { type: Date },
                 returnedAt: { type: Date },
+                penalty: { type: Number },
             }
         ],
         shippingAddress: {
@@ -31,6 +32,7 @@ const reservationSchema = new mongoose.Schema(
         itemsPrice: { type: Number, required: true },
         shippingPrice: { type: Number, required: true },
         totalPrice: { type: Number, required: true },
+        penaltyCharges: { type: Number },
         user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
         isPaid: { type: Boolean, default: false },
         paidAt: { type: Date },
