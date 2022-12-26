@@ -8,6 +8,16 @@ import Reservation from '../models/reservationModel.js';
 
 const reservationRouter = express.Router();
 
+reservationRouter.get(
+    '/',
+    isAuth,
+    isAdmin,
+    expressAsyncHandler(async (req, res) => {
+        const reservation = await Reservation.find().populate('user', 'name');
+        res.send(reservation);
+    })
+)
+
 reservationRouter.post(
     '/', isAuth, expressAsyncHandler(async (req, res) => {
         const newReservation = Reservation({
@@ -94,6 +104,22 @@ reservationRouter.get(
             res.status(404).send({ message: 'Reservation Not Found' })
         }
 
+    })
+);
+
+reservationRouter.put(
+    '/:id/deliver',
+    isAuth,
+    expressAsyncHandler(async (req, res) => {
+        const reservation = await Reservation.findById(req.params.id);
+        if (reservation) {
+            reservation.isDelivered = true;
+            reservation.deliveredAt = Date.now();
+            await reservation.save();
+            res.send({ message: 'Order Delivered' });
+        } else {
+            res.status(404).send({ message: 'Order Not Found' });
+        }
     })
 );
 
