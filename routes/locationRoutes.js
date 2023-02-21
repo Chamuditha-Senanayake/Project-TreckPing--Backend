@@ -9,8 +9,6 @@ const PAGE_SIZE = 3;
 
 locationRouter.get(
     "/admin",
-    isAuth,
-    isAdmin,
     expressAsyncHandler(async (req, res) => {
 
         const { query } = req;
@@ -29,8 +27,6 @@ locationRouter.get(
 
 locationRouter.get(
     "/:id",
-    isAuth,
-    isAdmin,
     expressAsyncHandler(async (req, res) => {
         const location = await Location.findById(req.params.id);
         if (location) {
@@ -48,7 +44,11 @@ locationRouter.put(
     expressAsyncHandler(async (req, res) => {
         const location = await Location.findById(req.params.id);
         if (location) {
+            location.location = req.body.nearestCity || location.nearestCity
             location.address = req.body.address || location.address;
+            location.agent = req.body.agent || location.agent;
+            location.email = req.body.email || location.email;
+            location.contact = req.body.contact || location.contact;
             location.enabledAsPickupLocation = req.body.enabledAsPickupLocation;
             location.enabledAsDeliveryLocation = req.body.enabledAsDeliveryLocation;
             const updatedLocation = await location.save();
@@ -66,9 +66,13 @@ locationRouter.post(
     isAdmin,
     expressAsyncHandler(async (req, res) => {
         const newLocation = new Location({
+            location: req.body.nearestCity,
             address: req.body.address,
+            agent: req.body.agent,
+            email: req.body.email,
+            contact: req.body.contact,
             enabledAsPickupLocation: req.body.enabledAsPickupLocation,
-            enabledAsDeliveryLocation: req.body.enabledAsDeliveryLocation,
+            enabledAsDeliveryLocation: req.body.enabledAsDeliveryLocation
         });
         const location = await newLocation.save();
         res.status(201).send({ message: "Location added", location })
