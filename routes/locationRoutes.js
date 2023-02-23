@@ -46,7 +46,7 @@ locationRouter.put(
         if (location) {
             location.location = req.body.nearestCity || location.nearestCity
             location.address = req.body.address || location.address;
-            location.agent = req.body.agent || location.agent;
+            location.agent = req.body.agentId || location.agent;
             location.email = req.body.email || location.email;
             location.contact = req.body.contact || location.contact;
             location.enabledAsPickupLocation = req.body.enabledAsPickupLocation;
@@ -68,7 +68,7 @@ locationRouter.post(
         const newLocation = new Location({
             location: req.body.nearestCity,
             address: req.body.address,
-            agent: req.body.agent,
+            agent: req.body.agentId,
             email: req.body.email,
             contact: req.body.contact,
             enabledAsPickupLocation: req.body.enabledAsPickupLocation,

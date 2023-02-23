@@ -89,8 +89,9 @@ userRouter.post(
     })
 );
 
+
 userRouter.put(
-    '/profile',
+    '/profile/edit',
     isAuth,
     expressAsyncHandler(async (req, res) => {
         const user = await User.findById(req.user._id);
@@ -100,19 +101,30 @@ userRouter.put(
             if (req.body.password) {
                 user.password = bcrypt.hashSync(req.body.password, 8);
             }
+
             const updatedUser = await user.save();
             res.send({
                 _id: updatedUser._id,
                 name: updatedUser.name,
                 email: updatedUser.email,
                 isAdmin: updatedUser.isAdmin,
-                isAgent: updatedUser.isAgent
-            })
-        }
-        else {
-            res.status(404).send({ message: 'User Not Found' });
+                token: generateToken(updatedUser),
+            });
+        } else {
+            res.status(404).send({ message: 'User not found' });
         }
     })
-)
+);
+
+userRouter.get(
+    "/agents/get-all-agents",
+    isAuth,
+    isAdmin,
+    expressAsyncHandler(async (req, res) => {
+        const users = await User.find({});
+        res.send(users);
+    })
+);
+
 
 export default userRouter;
