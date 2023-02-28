@@ -121,7 +121,17 @@ userRouter.get(
     isAuth,
     isAdmin,
     expressAsyncHandler(async (req, res) => {
-        const users = await User.find({});
+        const users = await User.find({ isAgent: true });
+        res.send(users);
+    })
+);
+
+userRouter.get(
+    "/staff/get-all-staff",
+    isAuth,
+    isAdmin,
+    expressAsyncHandler(async (req, res) => {
+        const users = await User.find(({ $or: [{ isAdmin: true }, { isAgent: true }] }));
         res.send(users);
     })
 );

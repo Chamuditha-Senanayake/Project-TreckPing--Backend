@@ -24,8 +24,8 @@ const productSchema = new mongoose.Schema(
         penalty: { type: Number, required: false },
         countInStock: { type: Number, required: true },
         countInStockForRent: { type: Number, required: false },
-        rating: { type: Number, required: false },
-        numReviews: { type: Number, required: false },
+        rating: { type: Number, required: false }, //set default to 0
+        numReviews: { type: Number, required: false }, //set default to 0
         reviews: [reviewSchema],
         pickupDate: { type: Date },
         returnDate: { type: Date },
