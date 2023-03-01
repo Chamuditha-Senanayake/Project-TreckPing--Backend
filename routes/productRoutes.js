@@ -82,7 +82,6 @@ productRouter.delete(
 
 const PAGE_SIZE = 3;
 
-
 productRouter.get(
     '/admin',
     isAuth,

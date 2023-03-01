@@ -26,7 +26,8 @@ orderRouter.post(
             itemsPrice: req.body.itemsPrice,
             shippingPrice: req.body.shippingPrice,
             totalPrice: req.body.totalPrice,
-            user: req.user._id
+            user: req.user._id,
+            deliveryStatus: "Preparing"
         });
 
         const order = await newOrder.save();
@@ -93,6 +94,52 @@ orderRouter.get(
     })
 );
 
+const PAGE_SIZE = 3;
+
+orderRouter.post(
+    '/by-location',
+    isAuth,
+    expressAsyncHandler(async (req, res) => {
+        const { query } = req;
+        const page = query.page || 1;
+        const pageSize = query.pageSize || PAGE_SIZE;
+
+        const orders = await Order.find({
+            "shippingAddress.address": req.body.address
+        }).skip(pageSize * (page - 1))
+            .limit(pageSize);
+
+        const countOrders = await Order.find({
+            "shippingAddress.address": req.body.address
+        }).count();
+
+        res.send({
+            orders,
+            countOrders,
+            page,
+            pages: Math.ceil(countOrders / pageSize),
+        });
+
+    })
+);
+
+
+orderRouter.post(
+    '/by-location/not-delivered',
+    isAuth,
+    expressAsyncHandler(async (req, res) => {
+        const orders = await Order.find(
+            { $and: [{ "shippingAddress.address": req.body.address }, { deliveryStatus: "Dispatched" }] })
+
+        if (orders) {
+            res.send(orders);
+        } else {
+            res.status(404).send({ message: 'Orders Not Found' });
+        }
+
+    })
+);
+
 orderRouter.get(
     '/:id', isAuth, expressAsyncHandler(async (req, res) => {
         const order = await Order.findById(req.params.id);
@@ -107,12 +154,29 @@ orderRouter.get(
 );
 
 orderRouter.put(
+    '/:id/dispatch',
+    isAuth,
+    expressAsyncHandler(async (req, res) => {
+        const order = await Order.findById(req.params.id);
+        if (order) {
+            order.isDispatched = true;
+            order.deliveryStatus = "Dispatched"
+            order.dispatchedAt = Date.now();
+            await order.save();
+            res.send({ message: 'Order Dispatched' });
+        } else {
+            res.status(404).send({ message: 'Order Not Found' });
+        }
+    })
+);
+
+orderRouter.put(
     '/:id/deliver',
     isAuth,
     expressAsyncHandler(async (req, res) => {
         const order = await Order.findById(req.params.id);
         if (order) {
-            order.isDelivered = true;
+            order.deliveryStatus = "Delivered"
             order.deliveredAt = Date.now();
             await order.save();
             res.send({ message: 'Order Delivered' });

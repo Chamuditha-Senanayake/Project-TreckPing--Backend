@@ -36,9 +36,9 @@ const reservationSchema = new mongoose.Schema(
         user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
         isPaid: { type: Boolean, default: false },
         paidAt: { type: Date },
-        isDelivered: { type: Boolean, default: false },
-        deliveredAt: { type: Date }
-
+        isDispatched: { type: Boolean, default: false },
+        deliveryStatus: { type: String, required: false },
+        deliveredAt: { type: Date },
     },
     {
         timestamps: true

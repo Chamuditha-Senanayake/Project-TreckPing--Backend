@@ -25,6 +25,21 @@ locationRouter.get(
     })
 );
 
+
+locationRouter.get(
+    "/get-all",
+    expressAsyncHandler(async (req, res) => {
+
+        const location = await Location.find();
+        if (location) {
+            res.send(location);
+        } else {
+            res.status(404).send({ message: "Location Not Found" });
+        }
+    })
+);
+
+
 locationRouter.get(
     "/:id",
     expressAsyncHandler(async (req, res) => {
@@ -32,7 +47,7 @@ locationRouter.get(
         if (location) {
             res.send(location);
         } else {
-            res.status(404).send({ message: "User Not Found" });
+            res.status(404).send({ message: "Loacation Not Found" });
         }
     })
 );

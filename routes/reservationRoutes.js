@@ -113,7 +113,8 @@ reservationRouter.put(
     expressAsyncHandler(async (req, res) => {
         const reservation = await Reservation.findById(req.params.id);
         if (reservation) {
-            reservation.isDelivered = true;
+            reservation.isDispatched = true;
+            // reservation.deliveryStatus = "Delivered"
             reservation.deliveredAt = Date.now();
             await reservation.save();
             res.send({ message: 'Order Delivered' });
