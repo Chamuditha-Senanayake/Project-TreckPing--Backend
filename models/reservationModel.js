@@ -19,6 +19,7 @@ const reservationSchema = new mongoose.Schema(
             }
         ],
         shippingAddress: {
+            customerName: { type: String, required: false },
             pickupLocation: { type: String, required: true },
             returnLocation: { type: String, required: true },
         },
@@ -39,6 +40,11 @@ const reservationSchema = new mongoose.Schema(
         isDispatched: { type: Boolean, default: false },
         deliveryStatus: { type: String, required: false },
         deliveredAt: { type: Date },
+        dispatchedAt: { type: Date },
+        releasedAt: { type: Date },
+        receivedAt: { type: Date },
+        returnedAt: { type: Date },
+        completedAt: { type: Date },
     },
     {
         timestamps: true
