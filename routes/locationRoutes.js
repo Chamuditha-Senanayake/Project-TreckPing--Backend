@@ -55,7 +55,6 @@ locationRouter.get(
 locationRouter.put(
     "/:id",
     isAuth,
-    isAdmin,
     expressAsyncHandler(async (req, res) => {
         const location = await Location.findById(req.params.id);
         if (location) {
