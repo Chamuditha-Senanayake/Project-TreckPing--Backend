@@ -42,7 +42,7 @@ reservationRouter.post(
 //     isAuth,
 //     isAdmin,
 //     expressAsyncHandler(async (req, res) => {
-//         const orders = await Order.aggregate([
+//         const orders = await Reservation.aggregate([
 //             {
 //                 $group: {
 //                     _id: null,

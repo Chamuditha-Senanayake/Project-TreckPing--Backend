@@ -4,6 +4,7 @@ import Order from '../models/orderModel.js';
 import User from '../models/userModel.js';
 import Product from '../models/productModel.js';
 import { isAdmin, isAuth } from '../utils.js';
+import Reservation from '../models/reservationModel.js';
 
 const orderRouter = express.Router();
 
@@ -50,6 +51,17 @@ orderRouter.get(
                 },
             },
         ]);
+
+        const reservations = await Reservation.aggregate([
+            {
+                $group: {
+                    _id: null,
+                    numOrders: { $sum: 1 },
+                    totalSales: { $sum: '$totalPrice' },
+                },
+            },
+        ]);
+
         const users = await User.aggregate([
             {
                 $group: {
@@ -68,6 +80,18 @@ orderRouter.get(
             },
             { $sort: { _id: 1 } },
         ]);
+
+        const dailyReservations = await Reservation.aggregate([
+            {
+                $group: {
+                    _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
+                    orders: { $sum: 1 },
+                    sales: { $sum: '$totalPrice' },
+                },
+            },
+            { $sort: { _id: 1 } },
+        ]);
+
         const productCategories = await Product.aggregate([
             {
                 $group: {
@@ -76,7 +100,7 @@ orderRouter.get(
                 },
             },
         ]);
-        res.send({ users, orders, dailyOrders, productCategories });
+        res.send({ users, orders, reservations, dailyOrders, dailyReservations, productCategories });
     })
 );
 
