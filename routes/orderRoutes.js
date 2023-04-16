@@ -92,6 +92,30 @@ orderRouter.get(
             { $sort: { _id: 1 } },
         ]);
 
+        const preparingOrders = await Order.aggregate([
+
+            { $group: { _id: "$deliveryStatus", count: { $sum: 1 } } },
+            { $match: { _id: "Preparing" } },
+        ]);
+
+        const completedOrders = await Order.aggregate([
+
+            { $group: { _id: "$deliveryStatus", count: { $sum: 1 } } },
+            { $match: { _id: "Completed" } },
+        ]);
+
+        const preparingReservations = await Reservation.aggregate([
+
+            { $group: { _id: "$deliveryStatus", count: { $sum: 1 } } },
+            { $match: { _id: "Preparing" } },
+        ]);
+
+        const completedReservations = await Reservation.aggregate([
+
+            { $group: { _id: "$deliveryStatus", count: { $sum: 1 } } },
+            { $match: { _id: "Completed" } },
+        ]);
+
         const productCategories = await Product.aggregate([
             {
                 $group: {
@@ -100,7 +124,27 @@ orderRouter.get(
                 },
             },
         ]);
-        res.send({ users, orders, reservations, dailyOrders, dailyReservations, productCategories });
+
+        const reservationsByDate = await Order.aggregate([
+            {
+                $group: {
+                    _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+                    totalAmount: { $sum: "$totalPrice" },
+                    orders: { $sum: 1 },
+
+                }
+            },
+            {
+                $match: {
+                    _id: {
+                        $gte: ("2023-01-01T00:00:00Z"),
+                        $lte: ("2023-04-15T23:59:59Z")
+                    }
+                }
+            }
+        ]);
+
+        res.send({ users, orders, reservations, dailyOrders, preparingOrders, completedOrders, dailyReservations, preparingReservations, completedReservations, productCategories, reservationsByDate });
     })
 );
 
