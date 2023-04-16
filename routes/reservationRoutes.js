@@ -15,6 +15,22 @@ reservationRouter.get(
     })
 )
 
+//to test
+reservationRouter.post(
+    '/reservations-by-date',
+    isAuth,
+    isAdmin,
+    expressAsyncHandler(async (req, res) => {
+        const reservation = await Reservation.find({ createdAt: req.user.startDate, createdAt: req.user.endDate, });
+        if (reservation) {
+            res.send(reservation);
+        }
+        else {
+            res.status(404).send({ message: 'Reservation Not Found' })
+        }
+    })
+)
+
 reservationRouter.post(
     '/', isAuth, expressAsyncHandler(async (req, res) => {
         const newReservation = Reservation({
