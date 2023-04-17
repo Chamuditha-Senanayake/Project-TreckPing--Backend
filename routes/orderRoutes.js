@@ -104,6 +104,117 @@ orderRouter.get(
             { $sort: { _id: 1 } },
         ]);
 
+        const monthlyOrders = await Order.aggregate([
+
+            {
+                $match: {
+                    createdAt: {
+                        $gte: new Date(new Date().setMonth(new Date().getMonth() - 12))
+                    }
+                }
+            },
+            {
+                $group: {
+                    _id: {
+                        year: { $year: "$createdAt" },
+                        month: { $month: "$createdAt" }
+                    },
+                    count: { $sum: 1 },
+                    totalAmount: { $sum: "$totalPrice" }
+                }
+            },
+            {
+                $sort: {
+                    "_id.year": 1,
+                    "_id.month": 1
+                }
+            },
+            {
+                $project: {
+                    _id: 0,
+                    month: {
+                        $switch: {
+                            branches: [
+                                { case: { $eq: ["$_id.month", 1] }, then: "Jan" },
+                                { case: { $eq: ["$_id.month", 2] }, then: "Feb" },
+                                { case: { $eq: ["$_id.month", 3] }, then: "March" },
+                                { case: { $eq: ["$_id.month", 4] }, then: "April" },
+                                { case: { $eq: ["$_id.month", 5] }, then: "May" },
+                                { case: { $eq: ["$_id.month", 6] }, then: "June" },
+                                { case: { $eq: ["$_id.month", 7] }, then: "July" },
+                                { case: { $eq: ["$_id.month", 8] }, then: "Aug" },
+                                { case: { $eq: ["$_id.month", 9] }, then: "Sept" },
+                                { case: { $eq: ["$_id.month", 10] }, then: "Oct" },
+                                { case: { $eq: ["$_id.month", 11] }, then: "Nov" },
+                                { case: { $eq: ["$_id.month", 12] }, then: "Dec" }
+                            ],
+                            default: "Unknown"
+                        }
+                    },
+                    year: "$_id.year",
+                    count: 1,
+                    totalAmount: 1
+                }
+            }
+
+
+
+        ]);
+
+        const monthlyReservations = await Reservation.aggregate([
+
+            {
+                $match: {
+                    createdAt: {
+                        $gte: new Date(new Date().setMonth(new Date().getMonth() - 12))
+                    }
+                }
+            },
+            {
+                $group: {
+                    _id: {
+                        year: { $year: "$createdAt" },
+                        month: { $month: "$createdAt" }
+                    },
+                    count: { $sum: 1 },
+                    totalAmount: { $sum: "$totalPrice" }
+                }
+            },
+            {
+                $sort: {
+                    "_id.year": 1,
+                    "_id.month": 1
+                }
+            },
+            {
+                $project: {
+                    _id: 0,
+                    month: {
+                        $switch: {
+                            branches: [
+                                { case: { $eq: ["$_id.month", 1] }, then: "Jan" },
+                                { case: { $eq: ["$_id.month", 2] }, then: "Feb" },
+                                { case: { $eq: ["$_id.month", 3] }, then: "March" },
+                                { case: { $eq: ["$_id.month", 4] }, then: "April" },
+                                { case: { $eq: ["$_id.month", 5] }, then: "May" },
+                                { case: { $eq: ["$_id.month", 6] }, then: "June" },
+                                { case: { $eq: ["$_id.month", 7] }, then: "July" },
+                                { case: { $eq: ["$_id.month", 8] }, then: "Aug" },
+                                { case: { $eq: ["$_id.month", 9] }, then: "Sept" },
+                                { case: { $eq: ["$_id.month", 10] }, then: "Oct" },
+                                { case: { $eq: ["$_id.month", 11] }, then: "Nov" },
+                                { case: { $eq: ["$_id.month", 12] }, then: "Dec" }
+                            ],
+                            default: "Unknown"
+                        }
+                    },
+                    year: "$_id.year",
+                    count: 1,
+                    totalAmount: 1
+                }
+            }
+        ]);
+
         const dailyReservations = await Reservation.aggregate([
             {
                 $group: {
@@ -172,7 +283,7 @@ orderRouter.get(
             }
         ]);
 
-        res.send({ users, orders, reservations, dailyOrders, preparingOrders, completedOrders, dailyReservations, preparingReservations, completedReservations, productCategories, reservationsByDate });
+        res.send({ users, orders, reservations, dailyOrders, monthlyOrders, monthlyReservations, preparingOrders, completedOrders, dailyReservations, preparingReservations, completedReservations, productCategories, reservationsByDate });
     })
 );
 
