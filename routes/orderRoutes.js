@@ -18,6 +18,28 @@ orderRouter.get(
     })
 )
 
+
+orderRouter.post(
+    '/orders-by-date',
+    isAuth,
+    isAdmin,
+    expressAsyncHandler(async (req, res) => {
+        const order = await Order.find({
+            createdAt:
+            {
+                $gte: [{ $dateToString: { date: "$createdAt", format: "%Y-%m-%dT%H:%M:%SZ", timezone: "UTC" } }, req.body.startDate],
+                $lt: [{ $dateToString: { date: "$createdAt", format: "%Y-%m-%dT%H:%M:%SZ", timezone: "UTC" } }, req.body.endDate]
+            }
+        });
+        if (order) {
+            res.send(order);
+        }
+        else {
+            res.status(404).send({ message: 'Orders Not Found' })
+        }
+    })
+)
+
 orderRouter.post(
     '/', isAuth, expressAsyncHandler(async (req, res) => {
         const newOrder = Order({
@@ -102,7 +124,7 @@ orderRouter.get(
         const completedOrders = await Order.aggregate([
 
             { $group: { _id: "$deliveryStatus", count: { $sum: 1 } } },
-            { $match: { _id: "Completed" } },
+            { $match: { _id: "Delivered" } },
         ]);
 
         const preparingReservations = await Reservation.aggregate([
@@ -161,7 +183,7 @@ orderRouter.post(
     isAuth,
     expressAsyncHandler(async (req, res) => {
 
-        const reservations = await Reservation.aggregate([
+        const orders = await Order.aggregate([
             {
                 $match: {
                     $expr: {
@@ -183,7 +205,7 @@ orderRouter.post(
             }
         ]);
 
-        const preparingReservations = await Reservation.aggregate([
+        const preparingOrders = await Order.aggregate([
             {
                 $match: {
                     deliveryStatus: "Preparing",
@@ -206,10 +228,10 @@ orderRouter.post(
             }
         ]);
 
-        const completedReservations = await Reservation.aggregate([
+        const completedOrders = await Order.aggregate([
             {
                 $match: {
-                    deliveryStatus: "Completed",
+                    deliveryStatus: "Delivered",
                     $expr: {
                         $and: [
                             { $gte: [{ $dateToString: { date: "$createdAt", format: "%Y-%m-%dT%H:%M:%SZ", timezone: "UTC" } }, req.body.startDate] },
@@ -228,7 +250,7 @@ orderRouter.post(
             }
         ]);
 
-        const reservationsByDate = await Reservation.aggregate([
+        const OrdersByDate = await Order.aggregate([
             {
                 $match: {
                     $expr: {
@@ -249,7 +271,7 @@ orderRouter.post(
             }
         ]);
 
-        res.send({ reservations, preparingReservations, completedReservations, reservationsByDate });
+        res.send({ orders, preparingOrders, completedOrders, OrdersByDate });
     })
 );
 

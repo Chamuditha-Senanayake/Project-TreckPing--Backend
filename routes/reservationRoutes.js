@@ -15,21 +15,123 @@ reservationRouter.get(
     })
 )
 
-//to test
 reservationRouter.post(
     '/reservations-by-date',
     isAuth,
     isAdmin,
     expressAsyncHandler(async (req, res) => {
-        const reservation = await Reservation.find({ createdAt: req.user.startDate, createdAt: req.user.endDate, });
+        const reservation = await Reservation.find({
+            createdAt:
+            {
+                $gte: [{ $dateToString: { date: "$createdAt", format: "%Y-%m-%dT%H:%M:%SZ", timezone: "UTC" } }, req.body.startDate],
+                $lt: [{ $dateToString: { date: "$createdAt", format: "%Y-%m-%dT%H:%M:%SZ", timezone: "UTC" } }, req.body.endDate]
+            }
+        });
         if (reservation) {
             res.send(reservation);
         }
         else {
-            res.status(404).send({ message: 'Reservation Not Found' })
+            res.status(404).send({ message: 'Reservations Not Found' })
         }
     })
 )
+
+reservationRouter.post(
+    '/filter-by-date',
+    isAuth,
+    expressAsyncHandler(async (req, res) => {
+
+        const reservations = await Reservation.aggregate([
+            {
+                $match: {
+                    $expr: {
+                        $and: [
+                            { $gte: [{ $dateToString: { date: "$createdAt", format: "%Y-%m-%dT%H:%M:%SZ", timezone: "UTC" } }, req.body.startDate] },
+                            { $lt: [{ $dateToString: { date: "$createdAt", format: "%Y-%m-%dT%H:%M:%SZ", timezone: "UTC" } }, req.body.endDate] }
+                        ]
+                    }
+                }
+            },
+
+            // Group documents by null and calculate the sum of reservations
+            {
+                $group: {
+                    _id: null,
+                    numOrders: { $sum: 1 },
+                    totalSales: { $sum: '$totalPrice' },
+                }
+            }
+        ]);
+
+        const preparingReservations = await Reservation.aggregate([
+            {
+                $match: {
+                    deliveryStatus: "Preparing",
+                    isPaid: true,
+                    $expr: {
+                        $and: [
+                            { $gte: [{ $dateToString: { date: "$createdAt", format: "%Y-%m-%dT%H:%M:%SZ", timezone: "UTC" } }, req.body.startDate] },
+                            { $lt: [{ $dateToString: { date: "$createdAt", format: "%Y-%m-%dT%H:%M:%SZ", timezone: "UTC" } }, req.body.endDate] },
+                        ]
+                    }
+                },
+            },
+
+            {
+                $group: {
+                    _id: null,
+                    count: { $sum: 1 },
+                    totalSales: { $sum: '$totalPrice' },
+                }
+            }
+        ]);
+
+        const completedReservations = await Reservation.aggregate([
+            {
+                $match: {
+                    deliveryStatus: "Completed",
+                    $expr: {
+                        $and: [
+                            { $gte: [{ $dateToString: { date: "$createdAt", format: "%Y-%m-%dT%H:%M:%SZ", timezone: "UTC" } }, req.body.startDate] },
+                            { $lt: [{ $dateToString: { date: "$createdAt", format: "%Y-%m-%dT%H:%M:%SZ", timezone: "UTC" } }, req.body.endDate] }
+                        ]
+                    }
+                },
+            },
+
+            {
+                $group: {
+                    _id: null,
+                    count: { $sum: 1 },
+                    totalSales: { $sum: '$totalPrice' },
+                }
+            }
+        ]);
+
+        const reservationsByDate = await Reservation.aggregate([
+            {
+                $match: {
+                    $expr: {
+                        $and: [
+                            { $gte: [{ $dateToString: { date: "$createdAt", format: "%Y-%m-%dT%H:%M:%SZ", timezone: "UTC" } }, req.body.startDate] }, //"2022-04-10T00:00:00Z"
+                            { $lt: [{ $dateToString: { date: "$createdAt", format: "%Y-%m-%dT%H:%M:%SZ", timezone: "UTC" } }, req.body.endDate] }  //"2023-02-16T00:00:00Z"
+                        ]
+                    }
+                },
+            },
+
+            {
+                $group: {
+                    _id: null,
+                    count: { $sum: 1 },
+                    totalSales: { $sum: '$totalPrice' },
+                }
+            }
+        ]);
+
+        res.send({ reservations, preparingReservations, completedReservations, reservationsByDate });
+    })
+);
 
 reservationRouter.post(
     '/', isAuth, expressAsyncHandler(async (req, res) => {
