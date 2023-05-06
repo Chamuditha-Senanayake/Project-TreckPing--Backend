@@ -6,6 +6,8 @@ import { generateToken, isAdmin, isAuth } from '../utils.js';
 
 const userRouter = express.Router();
 
+
+//get all users router
 userRouter.get(
     "/",
     isAuth,
@@ -16,6 +18,8 @@ userRouter.get(
     })
 );
 
+
+//get user by id router
 userRouter.get(
     "/:id",
     isAuth,
@@ -30,6 +34,8 @@ userRouter.get(
     })
 );
 
+
+//update user type by id router
 userRouter.put(
     "/:id",
     isAuth,
@@ -50,6 +56,7 @@ userRouter.put(
 );
 
 
+//user login router (sigin)
 userRouter.post(
     '/signin', expressAsyncHandler(async (req, res) => {
         const user = await User.findOne({ email: req.body.email });
@@ -70,6 +77,8 @@ userRouter.post(
     })
 );
 
+
+//create new user router (signup)
 userRouter.post(
     '/signup', expressAsyncHandler(async (req, res) => {
         const newUser = new User({
@@ -90,6 +99,7 @@ userRouter.post(
 );
 
 
+//update user profile by id router
 userRouter.put(
     '/profile/edit',
     isAuth,
@@ -116,6 +126,8 @@ userRouter.put(
     })
 );
 
+
+////get all agents router
 userRouter.get(
     "/agents/get-all-agents",
     isAuth,
@@ -126,6 +138,8 @@ userRouter.get(
     })
 );
 
+
+//get all staff router
 userRouter.get(
     "/staff/get-all-staff",
     isAuth,

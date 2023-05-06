@@ -8,6 +8,8 @@ import Reservation from '../models/reservationModel.js';
 
 const orderRouter = express.Router();
 
+
+//get order all orders router
 orderRouter.get(
     '/',
     isAuth,
@@ -19,6 +21,7 @@ orderRouter.get(
 )
 
 
+//get order orders by date router
 orderRouter.post(
     '/orders-by-date',
     isAuth,
@@ -40,6 +43,8 @@ orderRouter.post(
     })
 )
 
+
+//create new order router
 orderRouter.post(
     '/', isAuth, expressAsyncHandler(async (req, res) => {
         const newOrder = Order({
@@ -59,7 +64,7 @@ orderRouter.post(
 );
 
 
-//get summary API
+//get summary API (data for charts) 
 orderRouter.get(
     '/summary',
     isAuth,
@@ -93,6 +98,7 @@ orderRouter.get(
                 },
             },
         ]);
+
         const dailyOrders = await Order.aggregate([
             {
                 $group: {
@@ -105,7 +111,6 @@ orderRouter.get(
         ]);
 
         const monthlyOrders = await Order.aggregate([
-
             {
                 $match: {
                     createdAt: {
@@ -288,7 +293,7 @@ orderRouter.get(
 );
 
 
-//get summary by date API
+//get summary by date API (data for charts) 
 orderRouter.post(
     '/filter-by-date',
     isAuth,
@@ -387,6 +392,7 @@ orderRouter.post(
 );
 
 
+//get orders by user router
 orderRouter.get(
     '/mine', isAuth, expressAsyncHandler(async (req, res) => {
         const order = await Order.find({ user: req.user._id });
@@ -400,8 +406,12 @@ orderRouter.get(
     })
 );
 
+
+//page size for pagination
 const PAGE_SIZE = 3;
 
+
+//get orders by location router
 orderRouter.post(
     '/by-location',
     isAuth,
@@ -430,6 +440,7 @@ orderRouter.post(
 );
 
 
+//get not-delivered orders router
 orderRouter.post(
     '/by-location/not-delivered',
     isAuth,
@@ -446,6 +457,8 @@ orderRouter.post(
     })
 );
 
+
+//get order by id router
 orderRouter.get(
     '/:id', isAuth, expressAsyncHandler(async (req, res) => {
         const order = await Order.findById(req.params.id);
@@ -459,6 +472,8 @@ orderRouter.get(
     })
 );
 
+
+//update order by id router
 orderRouter.put(
     '/:id/dispatch',
     isAuth,
@@ -476,6 +491,8 @@ orderRouter.put(
     })
 );
 
+
+//change order delivery status router
 orderRouter.put(
     '/:id/deliver',
     isAuth,
@@ -492,6 +509,8 @@ orderRouter.put(
     })
 );
 
+
+//change order payment status router
 orderRouter.put(
     '/:id/pay',
     isAuth,

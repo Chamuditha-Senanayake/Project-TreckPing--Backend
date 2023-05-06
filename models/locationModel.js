@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 
+//Location Model
 const locationSchema = new mongoose.Schema(
     {
         location: { type: String },

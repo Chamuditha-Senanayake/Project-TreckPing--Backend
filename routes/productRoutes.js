@@ -5,11 +5,15 @@ import { isAuth, isAdmin } from '../utils.js';
 
 const productRouter = express.Router();
 
+
+//get all products router
 productRouter.get('/', async (req, res) => {
     const products = await Product.find();
     res.send(products);
 });
 
+
+//add new product router
 productRouter.post(
     '/',
     isAuth,
@@ -35,6 +39,8 @@ productRouter.post(
     })
 );
 
+
+//update product by id router
 productRouter.put(
     '/:id',
     isAuth,
@@ -64,6 +70,7 @@ productRouter.put(
 );
 
 
+//delete product by id router
 productRouter.delete(
     '/:id',
     isAuth,
@@ -80,8 +87,11 @@ productRouter.delete(
 );
 
 
+//page size for pagination
 const PAGE_SIZE = 3;
 
+
+//get all products with pagination
 productRouter.get(
     '/admin',
     isAuth,
@@ -105,8 +115,8 @@ productRouter.get(
 );
 
 
+//filter product
 productRouter.get('/search', expressAsyncHandler(async (req, res) => {
-
     const { query } = req;
     const pageSize = query.pageSize || PAGE_SIZE;
     const page = query.page || 1;
@@ -125,6 +135,8 @@ productRouter.get('/search', expressAsyncHandler(async (req, res) => {
                 },
             }
             : {};
+
+    //filter product by category       
     const categoryFilter = category && category !== 'all' ? { category } : {};
     const ratingFilter =
         rating && rating !== 'all'
@@ -134,6 +146,8 @@ productRouter.get('/search', expressAsyncHandler(async (req, res) => {
                 },
             }
             : {};
+
+    //filter product by price        
     const priceFilter =
         price && price !== 'all'
             ? {
@@ -182,7 +196,7 @@ productRouter.get('/search', expressAsyncHandler(async (req, res) => {
 }));
 
 
-
+//Add product review router 
 productRouter.post(
     '/:id/reviews',
     isAuth,
@@ -220,6 +234,7 @@ productRouter.post(
 );
 
 
+//get product categories router
 productRouter.get(
     '/categories',
     expressAsyncHandler(async (req, res) => {
@@ -228,6 +243,8 @@ productRouter.get(
     })
 )
 
+
+//get product by slug router
 productRouter.get('/slug/:slug', async (req, res) => {
     const product = await Product.findOne({ slug: req.params.slug });
     if (product) {
@@ -238,6 +255,8 @@ productRouter.get('/slug/:slug', async (req, res) => {
     }
 });
 
+
+//get product by id router
 productRouter.get('/:id', async (req, res) => {
     const product = await Product.findById(req.params.id);
     if (product) {

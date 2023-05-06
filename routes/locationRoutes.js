@@ -5,12 +5,13 @@ import { isAdmin, isAuth } from '../utils.js';
 
 const locationRouter = express.Router();
 
+//page size for pagination
 const PAGE_SIZE = 3;
 
+//get all locations with pagination
 locationRouter.get(
     "/admin",
     expressAsyncHandler(async (req, res) => {
-
         const { query } = req;
         const page = query.page || 1;
         const pageSize = query.pageSize || PAGE_SIZE;
@@ -26,10 +27,10 @@ locationRouter.get(
 );
 
 
+//get all locations router
 locationRouter.get(
     "/get-all",
     expressAsyncHandler(async (req, res) => {
-
         const location = await Location.find();
         if (location) {
             res.send(location);
@@ -40,6 +41,7 @@ locationRouter.get(
 );
 
 
+//get location by id router
 locationRouter.get(
     "/:id",
     expressAsyncHandler(async (req, res) => {
@@ -52,6 +54,8 @@ locationRouter.get(
     })
 );
 
+
+//update location by id router
 locationRouter.put(
     "/:id",
     isAuth,
@@ -74,6 +78,7 @@ locationRouter.put(
 );
 
 
+//add new location router
 locationRouter.post(
     '/addlocation',
     isAuth,
@@ -93,6 +98,8 @@ locationRouter.post(
     })
 );
 
+
+//delete location by id router
 locationRouter.delete(
     '/:id',
     isAuth,

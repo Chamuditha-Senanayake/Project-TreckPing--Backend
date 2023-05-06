@@ -1,5 +1,7 @@
 import mongoose from 'mongoose';
 
+
+//Review Model
 const reviewSchema = new mongoose.Schema(
     {
         name: { type: String, required: true },
@@ -11,6 +13,8 @@ const reviewSchema = new mongoose.Schema(
     }
 );
 
+
+//Product Model
 const productSchema = new mongoose.Schema(
     {
         name: { type: String, required: true, unique: true },

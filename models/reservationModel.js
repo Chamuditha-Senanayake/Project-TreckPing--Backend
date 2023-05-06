@@ -1,5 +1,7 @@
 import mongoose from 'mongoose';
 
+
+//Reservation Model
 const reservationSchema = new mongoose.Schema(
     {
         orderItems: [

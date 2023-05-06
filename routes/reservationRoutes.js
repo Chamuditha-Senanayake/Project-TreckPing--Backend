@@ -5,6 +5,7 @@ import Reservation from '../models/reservationModel.js';
 
 const reservationRouter = express.Router();
 
+//get all reservations router
 reservationRouter.get(
     '/',
     isAuth,
@@ -15,6 +16,7 @@ reservationRouter.get(
     })
 )
 
+//get reservations by date for admin router
 reservationRouter.post(
     '/reservations-by-date',
     isAuth,
@@ -36,6 +38,7 @@ reservationRouter.post(
     })
 )
 
+//get reservations summary (data for charts) 
 reservationRouter.post(
     '/filter-by-date',
     isAuth,
@@ -133,6 +136,8 @@ reservationRouter.post(
     })
 );
 
+
+//create new reservation router
 reservationRouter.post(
     '/', isAuth, expressAsyncHandler(async (req, res) => {
         const newReservation = Reservation({
@@ -152,6 +157,7 @@ reservationRouter.post(
 );
 
 
+//get reservations by user router
 reservationRouter.get(
     '/mine', isAuth, expressAsyncHandler(async (req, res) => {
         const reservation = await Reservation.find({ user: req.user._id });
@@ -166,10 +172,10 @@ reservationRouter.get(
 );
 
 
-/////////////////
-
+//page size for pagination
 const PAGE_SIZE = 3;
 
+//get reservations by location router
 reservationRouter.post(
     '/by-location',
     isAuth,
@@ -198,6 +204,7 @@ reservationRouter.post(
 );
 
 
+//get reservations by location and deliver status router
 reservationRouter.post(
     '/by-location/not-delivered',
     isAuth,
@@ -214,8 +221,9 @@ reservationRouter.post(
     })
 );
 
-//////////
 
+
+//get reservation by id router
 reservationRouter.get(
     '/:id', isAuth, expressAsyncHandler(async (req, res) => {
         const reservation = await Reservation.findById(req.params.id);
@@ -229,7 +237,7 @@ reservationRouter.get(
     })
 );
 
-
+//update reservation by id router
 reservationRouter.put(
     '/:id/dispatch',
     isAuth,
@@ -247,6 +255,8 @@ reservationRouter.put(
     })
 );
 
+
+//update delivery status as Delivered by reservation id
 reservationRouter.put(
     '/:id/deliver',
     isAuth,
@@ -264,6 +274,8 @@ reservationRouter.put(
     })
 );
 
+
+//update delivery status as Released by reservation id
 reservationRouter.put(
     '/:id/release',
     isAuth,
@@ -281,6 +293,8 @@ reservationRouter.put(
     })
 );
 
+
+//update delivery status as Received by reservation id
 reservationRouter.put(
     '/:id/receive',
     isAuth,
@@ -298,6 +312,8 @@ reservationRouter.put(
     })
 );
 
+
+//update delivery status as Returned by reservation id
 reservationRouter.put(
     '/:id/return',
     isAuth,
@@ -315,6 +331,8 @@ reservationRouter.put(
     })
 );
 
+
+//update delivery status as Completed by reservation id
 reservationRouter.put(
     '/:id/complete',
     isAuth,
@@ -332,6 +350,8 @@ reservationRouter.put(
     })
 );
 
+
+//update payment status by reservation id
 reservationRouter.put(
     '/:id/pay',
     isAuth,
